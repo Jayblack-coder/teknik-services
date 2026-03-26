@@ -5,7 +5,7 @@ export default function Register() {
   const [form, setForm] = useState({ name: "", email: "", password: "" });
 
   const handleSubmit = async () => {
-    await axios.post("http://localhost:5000/api/auth/register", form);
+    await axios.post("http://localhost:3000/api/auth/register", form);
     alert("Registered!");
   };
 
