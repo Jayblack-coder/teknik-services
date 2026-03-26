@@ -8,7 +8,7 @@ export default function ProviderProfile() {
   const user = JSON.parse(localStorage.getItem("user"));
 
 useEffect(() => {
-  axios.get("http://localhost:3000/api/auth/providers")
+  axios.get("http://localhost:3000/api/providers")
     .then(res => setProvider(res.data));
 }, []);
 

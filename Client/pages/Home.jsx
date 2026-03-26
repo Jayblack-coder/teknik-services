@@ -4,6 +4,7 @@ import API from "../Utils/api";
 
 export default function Home() {
   const [services, setServices] = useState([]);
+  const [providers, setProviders] = useState([]);
 
   useEffect(() => {
   API.get("/providers")
