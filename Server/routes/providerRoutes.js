@@ -23,5 +23,13 @@ router.get("/", auth, async (req, res) => {
     res.status(500).json({ msg: err.message });
   }
 });
+router.post("/", auth, async (req, res) => {
+  const provider = await Provider.create({
+    ...req.body,
+    userId: req.user.id
+  });
+console.log("Provider route loaded");
+  res.json(provider);
+});
 
 module.exports = router;
