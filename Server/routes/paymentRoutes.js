@@ -1,7 +1,7 @@
 const router = require("express").Router();
 const axios = require("axios");
 const User = require("../models/User");
-const Payment = require("../models/Payment"); // 👈 IMPORT HERE
+const Payment = require("../models/Payment"); 
 
 // VERIFY PAYMENT
 router.get("/verify/:reference", async (req, res) => {
@@ -20,27 +20,41 @@ router.get("/verify/:reference", async (req, res) => {
     const data = response.data.data;
 
     if (data.status === "success") {
+  const email = data.customer.email;
+  const user = await User.findOne({ email });
 
-      const email = data.customer.email;
+  const reference = data.reference;
 
-      // 🔥 FIND USER
-      const user = await User.findOne({ email });
+  // 🔐 CHECK DUPLICATE
+  const existingPayment = await Payment.findOne({ reference });
 
-      // 🔥 SAVE PAYMENT (PUT YOUR CODE HERE)
-      await Payment.create({
-        userId: user._id,
-        email,
-        amount: data.amount / 100,
-        reference,
-        status: data.status
-      });
+  if (existingPayment) {
+    return res.json({ msg: "Payment already processed" });
+  }
 
-      // 🔥 UPGRADE USER
-      user.plan = "premium";
-      await user.save();
+ 
+ try {
+  await Payment.create({
+    userId: user._id,
+    email,
+    amount: data.amount / 100,
+    reference,
+    status: data.status
+  });
+} catch (err) {
+  if (err.code === 11000) {
+    return res.json({ msg: "Duplicate payment ignored" });
+  }
+  throw err;
+}
 
-      return res.json({ msg: "Payment verified & user upgraded" });
-    }
+
+  user.plan = "premium";
+  await user.save();
+
+  return res.json({ msg: "Payment verified & user upgraded" });
+}
+    
 
     res.status(400).json({ msg: "Payment not successful" });
 

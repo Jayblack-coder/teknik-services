@@ -4,7 +4,7 @@ const paymentSchema = new mongoose.Schema({
   userId: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
   email: String,
   amount: Number,
-  reference: String,
+  reference: { type: String, unique: true }, // 
   status: String
 }, { timestamps: true });
 
