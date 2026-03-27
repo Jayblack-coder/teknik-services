@@ -1,34 +1,9 @@
 const router = require("express").Router();
 const axios = require("axios");
-const auth = require("../middleware/auth");
-
-router.post("/initialize", auth, async (req, res) => {
-  try {
-    const { email, amount } = req.body;
-
-    const response = await axios.post(
-      "https://api.paystack.co/transaction/initialize",
-      {
-        email,
-        amount: amount * 100, // Paystack uses kobo
-        callback_url: "http://localhost:5173/payment-success"
-      },
-      {
-        headers: {
-          Authorization: `Bearer ${process.env.PAYSTACK_SECRET}`,
-          "Content-Type": "application/json"
-        }
-      }
-    );
-
-    res.json(response.data);
-  } catch (err) {
-    res.status(500).json({ msg: err.message });
-  }
-});
-
 const User = require("../models/User");
+const Payment = require("../models/Payment"); // 👈 IMPORT HERE
 
+// VERIFY PAYMENT
 router.get("/verify/:reference", async (req, res) => {
   try {
     const { reference } = req.params;
@@ -45,15 +20,26 @@ router.get("/verify/:reference", async (req, res) => {
     const data = response.data.data;
 
     if (data.status === "success") {
-      // 🔥 Upgrade user
+
       const email = data.customer.email;
 
-      await User.findOneAndUpdate(
-        { email },
-        { plan: "premium" }
-      );
+      // 🔥 FIND USER
+      const user = await User.findOne({ email });
 
-      return res.json({ msg: "Payment verified, upgraded!" });
+      // 🔥 SAVE PAYMENT (PUT YOUR CODE HERE)
+      await Payment.create({
+        userId: user._id,
+        email,
+        amount: data.amount / 100,
+        reference,
+        status: data.status
+      });
+
+      // 🔥 UPGRADE USER
+      user.plan = "premium";
+      await user.save();
+
+      return res.json({ msg: "Payment verified & user upgraded" });
     }
 
     res.status(400).json({ msg: "Payment not successful" });

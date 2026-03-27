@@ -26,6 +26,7 @@ app.use("/api/auth", require("./routes/authRoutes"));
 app.use("/api/providers", require("./routes/providerRoutes"));
 app.use("/api/services", require("./routes/serviceRoutes"));
 app.use("/api/payment", require("./routes/paymentRoutes"));
+app.use("/api/admin", require("./routes/adminRoutes"));
 
 mongoose.connect(process.env.MONGO_URI)
 .then(() => {
