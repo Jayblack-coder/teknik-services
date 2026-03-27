@@ -1,6 +1,6 @@
 const router = require("express").Router();
 const auth = require("../middleware/auth");
-const controller = require("../controllers/providerController");
+const controller = require("../controller/providerController");
 
 router.get("/", auth, controller.getProviders);
 router.post("/", auth, controller.createProvider);

@@ -1,6 +1,6 @@
 const router = require("express").Router();
 const auth = require("../middleware/auth");
-const controller = require("../controllers/paymentController");
+const controller = require("../controller/paymentController");
 
 router.post("/initialize", auth, controller.initializePayment);
 router.get("/verify/:reference", controller.verifyPayment);
