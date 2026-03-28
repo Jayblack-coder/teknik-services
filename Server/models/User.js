@@ -13,7 +13,9 @@ const userSchema = new mongoose.Schema({
     type: String,
     enum: ["basic", "premium"],
     default: "basic"
-  }
+  },
+  resetToken: String,
+resetTokenExpire: Date,
 }, { timestamps: true });
 
 const bcrypt = require("bcryptjs");
