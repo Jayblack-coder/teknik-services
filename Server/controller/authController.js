@@ -6,6 +6,7 @@ const crypto = require("crypto");
 // REGISTER
 exports.register = async (req, res) => {
   try {
+     console.log("BODY:", req.body);
     const { name, email, password, role } = req.body;
 
     const salt = await bcrypt.genSalt(10);
