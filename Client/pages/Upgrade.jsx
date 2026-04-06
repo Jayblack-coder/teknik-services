@@ -9,7 +9,7 @@ export default function Upgrade() {
       "http://localhost:3000/api/payment/initialize",
       {
         email: "user@email.com", // use logged-in user email
-        amount: 2000 // ₦2000
+        amount: 1000 
       },
       {
         headers: {

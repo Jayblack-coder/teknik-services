@@ -2,10 +2,13 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Home from "../pages/Home";
 import Login from "../pages/Login";
 import Register from "../pages/Register";
+import AdminDashboard from "../pages/Register"
+import AdminRoute from "../components/AdminRoute"
 
 function App() {
   return (
     <BrowserRouter>
+    <Register/>
       <Routes>
         <Route path="/" element={<Home />} />
         <Route
