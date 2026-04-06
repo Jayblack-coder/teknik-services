@@ -19,7 +19,7 @@ app.use(
 app.use(express.json());
 
 console.log("Starting server...");
-console.log("MONGO_URI:", process.env.MONGO_URI);
+// console.log("MONGO_URI:", process.env.MONGO_URI);
 
 // Routes
 app.use("/api/auth", require("./routes/authRoutes"));
@@ -32,9 +32,11 @@ mongoose.connect(process.env.MONGO_URI)
 .then(() => {
   console.log("MongoDB Connected");
 
-  app.listen(3000, () => {
-    console.log("Server running on port 3000");
-  });
+ const PORT = process.env.PORT || 3000;
+
+app.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`);
+});
 
 })
 .catch(err => {
