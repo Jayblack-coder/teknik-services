@@ -6,15 +6,30 @@ import SearchFilter from "../components/SearchFilter";
 
 export default function Dashboard() {
   const [providers, setProviders] = useState([]);
+  const [loading, setLoading] = useState(false); // ✅ ADD HERE
+
   const user = JSON.parse(localStorage.getItem("user"));
 
+  // ✅ MAIN FETCH FUNCTION
   const fetchProviders = async (filters = {}) => {
-    const query = new URLSearchParams(filters).toString();
+    try {
+      setLoading(true);
 
-    const res = await API.get(`/providers?${query}`);
-    setProviders(res.data);
+      // 🔥 THIS WAS MISSING
+      const query = new URLSearchParams(filters).toString();
+
+      const res = await API.get(`/providers?${query}`);
+
+      setProviders(res.data);
+
+    } catch (err) {
+      console.error("Error fetching providers:", err);
+    } finally {
+      setLoading(false); // ✅ ALWAYS stop loading
+    }
   };
 
+  // ✅ INITIAL LOAD
   useEffect(() => {
     fetchProviders();
   }, []);
@@ -25,13 +40,17 @@ export default function Dashboard() {
         Service Marketplace
       </Typography>
 
-      {/* 🔍 FILTER UI */}
+      {/* 🔍 SEARCH + FILTER */}
       <SearchFilter onSearch={fetchProviders} />
 
-      {/* RESULTS */}
-      {providers.map(p => (
-        <ProviderCard key={p._id} provider={p} user={user} />
-      ))}
+      {/* ⏳ LOADING STATE */}
+      {loading ? (
+        <p>Loading providers...</p>
+      ) : (
+        providers.map((p) => (
+          <ProviderCard key={p._id} provider={p} user={user} />
+        ))
+      )}
     </Container>
   );
 }
