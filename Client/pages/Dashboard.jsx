@@ -3,6 +3,7 @@ import { Container, Typography } from "@mui/material";
 import API from "../utils/api";
 import ProviderCard from "../components/ProviderCard";
 import SearchFilter from "../components/SearchFilter";
+import { CircularProgress } from "@mui/material";
 
 export default function Dashboard() {
   const [providers, setProviders] = useState([]);
@@ -44,9 +45,9 @@ export default function Dashboard() {
       <SearchFilter onSearch={fetchProviders} />
 
       {/* ⏳ LOADING STATE */}
-      {loading ? (
-        <p>Loading providers...</p>
-      ) : (
+     {loading ? (
+  <CircularProgress />
+) : (
         providers.map((p) => (
           <ProviderCard key={p._id} provider={p} user={user} />
         ))
