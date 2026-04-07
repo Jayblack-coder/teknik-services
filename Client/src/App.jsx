@@ -29,11 +29,11 @@
 // export default App;
 
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import Navbar from "./components/Navbar";
-import Dashboard from "./pages/Dashboard";
-import Login from "./pages/Login";
-import Register from "./pages/Register";
-import Admin from "./pages/Admin";
+import Navbar from "../components/Navbar";
+import Dashboard from "../pages/Dashboard";
+import Login from "../pages/Login";
+import Register from "../pages/Register";
+import Admin from "../pages/Admin";
 
 function App() {
   return (
