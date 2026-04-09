@@ -32,36 +32,58 @@ export default function Register() {
     if (newRole !== null) setRole(newRole);
   };
 
+  // const handleSubmit = async () => {
+  //   try {
+  //     // 🔐 Register user
+  //     const res = await API.post("/auth/register", {
+  //       name: form.name,
+  //       email: form.email,
+  //       password: form.password,
+  //       role
+  //     });
+
+  //     const token = res.data.token;
+
+  //     // 👷 If provider → create provider profile
+  //     if (role === "provider") {
+  //       await API.post("/providers", {
+  //         profession: form.profession,
+  //         location: form.location,
+  //         phone: form.phone,
+  //         description: `${form.profession} based in ${form.location}`
+  //       });
+  //     }
+
+  //     alert("Registration successful!");
+  //     window.location.href = "/login";
+
+  //   } catch (err) {
+  //     console.log(err);
+  //     alert("Registration failed");
+  //   }
+  // };
+
   const handleSubmit = async () => {
-    try {
-      // 🔐 Register user
-      const res = await API.post("/auth/register", {
-        name: form.name,
-        email: form.email,
-        password: form.password,
-        role
-      });
+  try {
+    const res = await API.post("/auth/register", {
+      ...form,
+      role
+    });
 
-      const token = res.data.token;
+    // ✅ Save auth data
+    localStorage.setItem("token", res.data.token);
+    localStorage.setItem("user", JSON.stringify(res.data.user));
 
-      // 👷 If provider → create provider profile
-      if (role === "provider") {
-        await API.post("/providers", {
-          profession: form.profession,
-          location: form.location,
-          phone: form.phone,
-          description: `${form.profession} based in ${form.location}`
-        });
-      }
+    alert("Registration successful!");
 
-      alert("Registration successful!");
-      window.location.href = "/login";
+    // 🔁 Redirect
+    window.location.href = "/";
 
-    } catch (err) {
-      console.log(err);
-      alert("Registration failed");
-    }
-  };
+  } catch (err) {
+    console.log(err.response?.data || err.message);
+    alert("Registration failed");
+  }
+};
 
   return (
     <Container maxWidth="sm">

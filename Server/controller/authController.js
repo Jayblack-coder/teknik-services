@@ -114,7 +114,7 @@ const User = require("../models/User");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcryptjs");
 const crypto = require("crypto");
-
+const Provider = require("../models/Provider");
 // 🔐 HELPER: Generate Token
 const generateToken = (user) => {
   return jwt.sign(
@@ -125,11 +125,18 @@ const generateToken = (user) => {
 };
 
 // ================= REGISTER =================
+// 
 exports.register = async (req, res) => {
   try {
-    console.log("BODY:", req.body);
-
-    const { name, email, password, role } = req.body;
+    const {
+      name,
+      email,
+      password,
+      role,
+      profession,
+      location,
+      phone
+    } = req.body;
 
     // 🚫 Check if user exists
     const existingUser = await User.findOne({ email });
@@ -137,11 +144,11 @@ exports.register = async (req, res) => {
       return res.status(400).json({ msg: "Email already exists" });
     }
 
-    // 🔐 HASH PASSWORD
+    // 🔐 Hash password
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt);
 
-    // 👤 CREATE USER
+    // 👤 Create user
     const user = await User.create({
       name,
       email,
@@ -149,20 +156,39 @@ exports.register = async (req, res) => {
       role
     });
 
-    // 🎟 CREATE TOKEN
-    const token = generateToken(user);
+    // 🧑‍🔧 AUTO CREATE PROVIDER PROFILE
+    let provider = null;
+
+    if (role === "provider") {
+      provider = await Provider.create({
+        userId: user._id,
+        profession,
+        location,
+        phone,
+        description: `${profession} based in ${location}`
+      });
+    }
+
+    // 🎟 Token
+    const token = jwt.sign(
+      { id: user._id, role: user.role, plan: user.plan },
+      process.env.JWT_SECRET
+    );
 
     // 🔒 Remove password
     const { password: pwd, ...userData } = user._doc;
 
-    res.json({ token, user: userData });
+    res.json({
+      token,
+      user: userData,
+      provider // will be null for subscribers
+    });
 
   } catch (err) {
     console.log("REGISTER ERROR:", err.message);
     res.status(500).json({ msg: err.message });
   }
 };
-
 // ================= LOGIN =================
 exports.login = async (req, res) => {
   try {
