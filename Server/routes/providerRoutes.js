@@ -45,6 +45,28 @@ router.get("/", auth,  async (req, res) => {
     res.status(500).json({ msg: err.message });
   }
 });
+router.get("/:id", auth, async (req, res) => {
+  try {
+    const provider = await Provider.findById(req.params.id)
+      .populate("userId", "name plan");
+
+    if (!provider) {
+      return res.status(404).json({ msg: "Provider not found" });
+    }
+
+    const obj = provider.toObject();
+
+    // 🔐 Hide phone if not premium
+    if (req.user.plan !== "premium") {
+      obj.phone = null;
+    }
+
+    res.json(obj);
+
+  } catch (err) {
+    res.status(500).json({ msg: err.message });
+  }
+});
 router.post("/", auth, controller.createProvider);
 
 module.exports = router;
