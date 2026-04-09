@@ -4,6 +4,8 @@ import API from "../utils/api";
 import ProviderCard from "../components/ProviderCard";
 import SearchFilter from "../components/SearchFilter";
 import { CircularProgress } from "@mui/material";
+import EmptyState from "../components/EmptyState";
+
 
 export default function Dashboard() {
   const [providers, setProviders] = useState([]);
@@ -41,17 +43,19 @@ export default function Dashboard() {
         Service Center
       </Typography>
 
-      {/* 🔍 SEARCH + FILTER */}
-      <SearchFilter onSearch={fetchProviders} />
+      {/* 🔍 FILTER */}
+<SearchFilter onSearch={fetchProviders} />
 
-      {/* ⏳ LOADING STATE */}
-     {loading ? (
+{/* ⏳ LOADING */}
+{loading ? (
   <CircularProgress />
+) : providers?.length > 0 ? (
+  providers.map((p) => (
+    <ProviderCard key={p._id} provider={p} user={user} />
+  ))
 ) : (
-        providers.map((p) => (
-          <ProviderCard key={p._id} provider={p} user={user} />
-        ))
-      )}
+  <EmptyState onReset={() => fetchProviders()} />
+)}
     </Container>
   );
 }
