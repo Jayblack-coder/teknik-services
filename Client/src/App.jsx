@@ -34,7 +34,7 @@ import Dashboard from "../pages/Dashboard";
 import Login from "../pages/Login";
 import Register from "../pages/Register";
 import Admin from "../pages/Admin";
-import Home from "../pages/Home";
+import ProviderProfile from "../pages/ProviderProfile";
 
 function App() {
   return (
@@ -46,6 +46,7 @@ function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
         <Route path="/admin" element={<Admin />} />
+        <Route path="/provider/:id" element={<ProviderProfile />} />
       </Routes>
     </BrowserRouter>
   );

@@ -1,30 +1,63 @@
 import { useEffect, useState } from "react";
-import axios from "axios";
-import { canViewContact } from "../Utils/checkAccess";
-// import API from "../Utils/api";
+import { useParams } from "react-router-dom";
+import {
+  Container,
+  Typography,
+  Card,
+  CardContent,
+  Button,
+  CircularProgress
+} from "@mui/material";
+import API from "../utils/api";
 
 export default function ProviderProfile() {
-  const [provider, setProvider] = useState({});
-  const user = JSON.parse(localStorage.getItem("user"));
+  const { id } = useParams();
+  const [provider, setProvider] = useState(null);
+  const [loading, setLoading] = useState(true);
 
-useEffect(() => {
-  axios.get("http://localhost:3000/api/providers")
-    .then(res => setProvider(res.data));
-}, []);
+  const user = JSON.parse(localStorage.getItem("user") || "null");
+
+  useEffect(() => {
+    API.get(`/providers/${id}`)
+      .then(res => setProvider(res.data))
+      .catch(err => console.log(err))
+      .finally(() => setLoading(false));
+  }, [id]);
+
+  if (loading) return <CircularProgress />;
+
+  if (!provider) return <p>Provider not found</p>;
 
   return (
-    <div>
-      <h2>{provider.profession}</h2>
-      <p>{provider.description}</p>
+    <Container maxWidth="sm">
+      <Card sx={{ mt: 4 }}>
+        <CardContent>
 
-      {/* 🔐 PUT IT RIGHT HERE */}
-      {canViewContact(user) ? (
-        <p>📞 {provider.phone}</p>
-      ) : (
-        <p style={{ color: "red" }}>
-          Upgrade to view contact
-        </p>
-      )}
-    </div>
+          <Typography variant="h4">
+            {provider.profession}
+          </Typography>
+
+          <Typography color="text.secondary">
+            {provider.location}
+          </Typography>
+
+          <Typography mt={2}>
+            {provider.description}
+          </Typography>
+
+          {/* 🔐 CONTACT LOCK */}
+          {user?.plan === "premium" ? (
+            <Typography mt={2}>
+              📞 {provider.phone}
+            </Typography>
+          ) : (
+            <Button variant="contained" color="secondary" sx={{ mt: 2 }}>
+              Upgrade to view contact
+            </Button>
+          )}
+
+        </CardContent>
+      </Card>
+    </Container>
   );
 }
