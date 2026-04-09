@@ -1,53 +1,189 @@
-const User = require("../models/User");
-const jwt = require("jsonwebtoken");
-// const bcrypt = require("bcryptjs");
-const crypto = require("crypto");
+// const User = require("../models/User");
+// const jwt = require("jsonwebtoken");
+// // const bcrypt = require("bcryptjs");
+// const crypto = require("crypto");
 
-// REGISTER
-exports.register = async (req, res) => {
-  try {
-     console.log("BODY:", req.body);
-    const { name, email, password, role } = req.body;
+// // REGISTER
+// exports.register = async (req, res) => {
+//   try {
+//      console.log("BODY:", req.body);
+//     const { name, email, password, role } = req.body;
 
     
 
+//     const user = await User.create({
+//       name,
+//       email,
+//       password,
+//       role
+//     });
+
+//     res.json(user);
+//   } catch (err) {
+//     console.log("REGISTER ERROR:", err.message);
+//     res.status(500).json({ msg: err.message });
+//   }
+// };
+
+// // LOGIN
+// exports.login = async (req, res) => {
+//   try {
+//     const user = await User.findOne({ email: req.body.email });
+
+//     if (!user) return res.status(404).json({ msg: "User not found" });
+
+//     const isMatch = await bcrypt.compare(
+//       req.body.password,
+//       user.password
+//     );
+
+//     if (!isMatch) {
+//       return res.status(400).json({ msg: "Invalid credentials" });
+//     }
+
+//     const token = jwt.sign(
+//       { id: user._id, role: user.role, plan: user.plan },
+//       process.env.JWT_SECRET
+//     );
+
+//     // remove password from response
+//     const { password, ...userData } = user._doc;
+
+//     res.json({ token, user: userData });
+
+//   } catch (err) {
+//     res.status(500).json({ msg: err.message });
+//   }
+// };
+
+// // FORGOT PASSWORD
+// exports.forgotPassword = async (req, res) => {
+//   try {
+//     const user = await User.findOne({ email: req.body.email });
+
+//     if (!user) {
+//       return res.status(404).json({ msg: "User not found" });
+//     }
+
+//     const resetToken = crypto.randomBytes(32).toString("hex");
+
+//     user.resetToken = resetToken;
+//     user.resetTokenExpire = Date.now() + 10 * 60 * 1000;
+
+//     await user.save();
+
+//     const resetUrl = `http://localhost:5173/reset-password/${resetToken}`;
+
+//     res.json({ msg: "Reset link generated", resetUrl });
+
+//   } catch (err) {
+//     res.status(500).json({ msg: err.message });
+//   }
+// };
+
+// // RESET PASSWORD
+// exports.resetPassword = async (req, res) => {
+//   try {
+//     const { token } = req.params;
+
+//     const user = await User.findOne({
+//       resetToken: token,
+//       resetTokenExpire: { $gt: Date.now() }
+//     });
+
+//     if (!user) {
+//       return res.status(400).json({ msg: "Invalid or expired token" });
+//     }
+
+//     const salt = await bcrypt.genSalt(10);
+//     user.password = await bcrypt.hash(req.body.password, salt);
+
+//     user.resetToken = undefined;
+//     user.resetTokenExpire = undefined;
+
+//     await user.save();
+
+//     res.json({ msg: "Password reset successful" });
+
+//   } catch (err) {
+//     res.status(500).json({ msg: err.message });
+//   }
+// };
+
+const User = require("../models/User");
+const jwt = require("jsonwebtoken");
+const bcrypt = require("bcryptjs");
+const crypto = require("crypto");
+
+// 🔐 HELPER: Generate Token
+const generateToken = (user) => {
+  return jwt.sign(
+    { id: user._id, role: user.role, plan: user.plan },
+    process.env.JWT_SECRET,
+    { expiresIn: "7d" }
+  );
+};
+
+// ================= REGISTER =================
+exports.register = async (req, res) => {
+  try {
+    console.log("BODY:", req.body);
+
+    const { name, email, password, role } = req.body;
+
+    // 🚫 Check if user exists
+    const existingUser = await User.findOne({ email });
+    if (existingUser) {
+      return res.status(400).json({ msg: "Email already exists" });
+    }
+
+    // 🔐 HASH PASSWORD
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(password, salt);
+
+    // 👤 CREATE USER
     const user = await User.create({
       name,
       email,
-      password,
+      password: hashedPassword,
       role
     });
 
-    res.json(user);
+    // 🎟 CREATE TOKEN
+    const token = generateToken(user);
+
+    // 🔒 Remove password
+    const { password: pwd, ...userData } = user._doc;
+
+    res.json({ token, user: userData });
+
   } catch (err) {
     console.log("REGISTER ERROR:", err.message);
     res.status(500).json({ msg: err.message });
   }
 };
 
-// LOGIN
+// ================= LOGIN =================
 exports.login = async (req, res) => {
   try {
-    const user = await User.findOne({ email: req.body.email });
+    const { email, password } = req.body;
 
-    if (!user) return res.status(404).json({ msg: "User not found" });
+    const user = await User.findOne({ email });
 
-    const isMatch = await bcrypt.compare(
-      req.body.password,
-      user.password
-    );
+    if (!user) {
+      return res.status(404).json({ msg: "User not found" });
+    }
+
+    // 🔐 COMPARE HASHED PASSWORD
+    const isMatch = await bcrypt.compare(password, user.password);
 
     if (!isMatch) {
       return res.status(400).json({ msg: "Invalid credentials" });
     }
 
-    const token = jwt.sign(
-      { id: user._id, role: user.role, plan: user.plan },
-      process.env.JWT_SECRET
-    );
+    const token = generateToken(user);
 
-    // remove password from response
-    const { password, ...userData } = user._doc;
+    const { password: pwd, ...userData } = user._doc;
 
     res.json({ token, user: userData });
 
@@ -56,7 +192,7 @@ exports.login = async (req, res) => {
   }
 };
 
-// FORGOT PASSWORD
+// ================= FORGOT PASSWORD =================
 exports.forgotPassword = async (req, res) => {
   try {
     const user = await User.findOne({ email: req.body.email });
@@ -81,7 +217,7 @@ exports.forgotPassword = async (req, res) => {
   }
 };
 
-// RESET PASSWORD
+// ================= RESET PASSWORD =================
 exports.resetPassword = async (req, res) => {
   try {
     const { token } = req.params;
@@ -95,6 +231,7 @@ exports.resetPassword = async (req, res) => {
       return res.status(400).json({ msg: "Invalid or expired token" });
     }
 
+    // 🔐 HASH NEW PASSWORD
     const salt = await bcrypt.genSalt(10);
     user.password = await bcrypt.hash(req.body.password, salt);
 
