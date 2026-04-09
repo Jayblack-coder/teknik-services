@@ -1,34 +1,134 @@
 import { useState } from "react";
-import { TextField, Button, Container } from "@mui/material";
+import {
+  Container,
+  TextField,
+  Button,
+  Typography,
+  Card,
+  CardContent,
+  IconButton,
+  InputAdornment,
+  CircularProgress
+} from "@mui/material";
+import { Visibility, VisibilityOff } from "@mui/icons-material";
 import API from "../utils/api";
 
 export default function Login() {
-  const [form, setForm] = useState({ email: "", password: "" });
+  const [form, setForm] = useState({
+    email: "",
+    password: ""
+  });
 
-  const handleSubmit = async () => {
-    const res = await API.post("/auth/login", form);
+  const [showPassword, setShowPassword] = useState(false);
+  const [loading, setLoading] = useState(false);
 
-    localStorage.setItem("token", res.data.token);
-    localStorage.setItem("user", JSON.stringify(res.data.user));
+  const handleChange = (e) => {
+    setForm({ ...form, [e.target.name]: e.target.value });
+  };
 
-    window.location.href = "/";
+  const handleLogin = async () => {
+    try {
+      setLoading(true);
+
+      const res = await API.post("/auth/login", form);
+
+      // ✅ Save auth
+      localStorage.setItem("token", res.data.token);
+      localStorage.setItem("user", JSON.stringify(res.data.user));
+
+      alert("Login successful!");
+
+      // 🔁 Redirect
+      window.location.href = "/";
+
+    } catch (err) {
+      console.log(err.response?.data || err.message);
+      <Typography color="error">{err.response?.data?.msg || "Login failed"}</Typography>
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
     <Container maxWidth="sm">
-      <TextField
-        fullWidth label="Email" margin="normal"
-        onChange={(e) => setForm({...form, email: e.target.value})}
-      />
+      <Card
+        sx={{
+          mt: 8,
+          p: 2,
+          borderRadius: 4,
+          boxShadow: 3
+        }}
+      >
+        <CardContent>
 
-      <TextField
-        fullWidth label="Password" type="password" margin="normal"
-        onChange={(e) => setForm({...form, password: e.target.value})}
-      />
+          {/* TITLE */}
+          <Typography variant="h4" align="center" gutterBottom>
+            Welcome Back 👋
+          </Typography>
 
-      <Button fullWidth variant="contained" onClick={handleSubmit}>
-        Login
-      </Button>
+          <Typography align="center" color="text.secondary" mb={2}>
+            Login to access your account
+          </Typography>
+
+          {/* EMAIL */}
+          <TextField
+            fullWidth
+            label="Email"
+            name="email"
+            margin="normal"
+            onChange={handleChange}
+          />
+
+          {/* PASSWORD */}
+          <TextField
+            fullWidth
+            label="Password"
+            type={showPassword ? "text" : "password"}
+            name="password"
+            margin="normal"
+            onChange={handleChange}
+            InputProps={{
+              endAdornment: (
+                <InputAdornment position="end">
+                  <IconButton
+                    onClick={() => setShowPassword(!showPassword)}
+                  >
+                    {showPassword ? <VisibilityOff /> : <Visibility />}
+                  </IconButton>
+                </InputAdornment>
+              )
+            }}
+          />
+
+          {/* FORGOT PASSWORD */}
+          <Typography
+            align="right"
+            sx={{ mt: 1, cursor: "pointer", fontSize: 14 }}
+            onClick={() => (window.location.href = "/forgot-password")}
+          >
+            Forgot Password?
+          </Typography>
+
+          {/* LOGIN BUTTON */}
+          <Button
+            fullWidth
+            variant="contained"
+            sx={{ mt: 3, py: 1.5 }}
+            onClick={handleLogin}
+            disabled={!form.email || !form.password}login
+            onKeyDown={(e) => e.key === "Enter" && handleLogin()}
+          >
+            {loading ? <CircularProgress size={24} /> : "Login"}
+          </Button>
+
+          {/* FOOTER */}
+          <Typography align="center" mt={2}>
+            Don’t have an account?{" "}
+            <a href="/register">Register</a>
+          </Typography>
+
+        </CardContent>
+      </Card>
     </Container>
   );
 }

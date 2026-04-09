@@ -138,6 +138,14 @@ exports.register = async (req, res) => {
       phone
     } = req.body;
 
+    if (!name || !email || !password) {
+  return res.status(400).json({ msg: "All fields required" });
+}
+
+ if (role === "provider" && (!profession || !location || !phone)) {
+      return res.status(400).json({ msg: "Provider details required" });
+    }
+
     // 🚫 Check if user exists
     const existingUser = await User.findOne({ email });
     if (existingUser) {
