@@ -12,6 +12,7 @@ export default function Dashboard() {
   const [loading, setLoading] = useState(false); // ✅ ADD HERE
 
   const user = JSON.parse(localStorage.getItem("user"));
+  const [filters, setFilters] = useState({});
 
   // ✅ MAIN FETCH FUNCTION
   const fetchProviders = async (filters = {}) => {
@@ -44,7 +45,10 @@ export default function Dashboard() {
       </Typography>
 
       {/* 🔍 FILTER */}
-<SearchFilter onSearch={fetchProviders} />
+<SearchFilter onSearch={(f) => {
+  setFilters(f);
+  fetchProviders(f);
+}} />
 
 {/* ⏳ LOADING */}
 {loading ? (
