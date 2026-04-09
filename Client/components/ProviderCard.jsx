@@ -32,7 +32,9 @@ export default function ProviderCard({ provider, user }) {
     >
       <CardContent>
         <Typography variant="h6">
-          {provider.profession}
+          <Avatar sx={{ width: 60, height: 60 }}>
+  {provider.profession[0]}
+</Avatar>
         </Typography>
 
         <Typography>
