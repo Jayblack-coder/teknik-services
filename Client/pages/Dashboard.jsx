@@ -38,7 +38,7 @@ export default function Dashboard() {
   return (
     <Container>
       <Typography variant="h4" gutterBottom>
-        Service Marketplace
+        Service Center
       </Typography>
 
       {/* 🔍 SEARCH + FILTER */}
