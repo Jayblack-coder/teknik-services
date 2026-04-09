@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
-import API from "../Utils/api";
+import API from "../utils/api";
 
 export default function Home() {
   const [services, setServices] = useState([]);
