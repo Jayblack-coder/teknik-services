@@ -16,11 +16,16 @@ export default function ResetPassword() {
   const navigate = useNavigate();
 
   const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
 
   const handleSubmit = async () => {
+    if (password !== confirmPassword) {
+  setError("Passwords do not match");
+  return;
+}
     try {
       setLoading(true);
       setError("");
