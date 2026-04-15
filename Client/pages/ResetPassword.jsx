@@ -74,6 +74,14 @@ export default function ResetPassword() {
             value={password}
             onChange={(e) => setPassword(e.target.value)}
           />
+          <TextField
+  fullWidth
+  label="Confirm Password"
+  type="password"
+  margin="normal"
+  value={confirmPassword}
+  onChange={(e) => setConfirmPassword(e.target.value)}
+/>
 
           {/* ERROR */}
           {error && (
