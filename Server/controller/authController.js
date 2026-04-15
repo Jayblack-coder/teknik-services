@@ -252,6 +252,35 @@ exports.forgotPassword = async (req, res) => {
 };
 
 // ================= RESET PASSWORD =================
+// exports.resetPassword = async (req, res) => {
+//   try {
+//     const { token } = req.params;
+
+//     const user = await User.findOne({
+//       resetToken: token,
+//       resetTokenExpire: { $gt: Date.now() }
+//     });
+
+//     if (!user) {
+//       return res.status(400).json({ msg: "Invalid or expired token" });
+//     }
+
+//     // 🔐 HASH NEW PASSWORD
+//     const salt = await bcrypt.genSalt(10);
+//     user.password = await bcrypt.hash(req.body.password, salt);
+
+//     user.resetToken = undefined;
+//     user.resetTokenExpire = undefined;
+
+//     await user.save();
+
+//     res.json({ msg: "Password reset successful" });
+
+//   } catch (err) {
+//     res.status(500).json({ msg: err.message });
+//   }
+// }; 
+
 exports.resetPassword = async (req, res) => {
   try {
     const { token } = req.params;
@@ -265,7 +294,7 @@ exports.resetPassword = async (req, res) => {
       return res.status(400).json({ msg: "Invalid or expired token" });
     }
 
-    // 🔐 HASH NEW PASSWORD
+    // 🔐 Hash new password
     const salt = await bcrypt.genSalt(10);
     user.password = await bcrypt.hash(req.body.password, salt);
 
@@ -274,7 +303,20 @@ exports.resetPassword = async (req, res) => {
 
     await user.save();
 
-    res.json({ msg: "Password reset successful" });
+    // 🎟 CREATE TOKEN (NEW)
+    const newToken = jwt.sign(
+      { id: user._id, role: user.role, plan: user.plan },
+      process.env.JWT_SECRET,
+      { expiresIn: "7d" }
+    );
+
+    const { password, ...userData } = user._doc;
+
+    res.json({
+      msg: "Password reset successful",
+      token: newToken,
+      user: userData
+    });
 
   } catch (err) {
     res.status(500).json({ msg: err.message });
