@@ -6,8 +6,11 @@ import {
   Typography,
   Card,
   CardContent,
+   IconButton, 
+   InputAdornment, 
   CircularProgress
 } from "@mui/material";
+import { Visibility, VisibilityOff } from "@mui/icons-material";
 import { useParams, useNavigate } from "react-router-dom";
 import API from "../utils/api";
 
@@ -17,6 +20,7 @@ export default function ResetPassword() {
 
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
@@ -71,21 +75,39 @@ export default function ResetPassword() {
           </Typography>
 
           {/* PASSWORD */}
-          <TextField
-            fullWidth
-            label="New Password"
-            type="password"
-            margin="normal"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-          />
+         <TextField
+  fullWidth
+  label="New Password"
+  type={showPassword ? "text" : "password"}
+  margin="normal"
+  value={password}
+  onChange={(e) => setPassword(e.target.value)}
+  InputProps={{
+    endAdornment: (
+      <InputAdornment position="end">
+        <IconButton onClick={() => setShowPassword(!showPassword)}>
+          {showPassword ? <VisibilityOff /> : <Visibility />}
+        </IconButton>
+      </InputAdornment>
+    )
+  }}
+/>
           <TextField
   fullWidth
   label="Confirm Password"
-  type="password"
+  type={showPassword ? "text" : "password"}
   margin="normal"
   value={confirmPassword}
   onChange={(e) => setConfirmPassword(e.target.value)}
+  InputProps={{
+    endAdornment: (
+      <InputAdornment position="end">
+        <IconButton onClick={() => setShowPassword(!showPassword)}>
+          {showPassword ? <VisibilityOff /> : <Visibility />}
+        </IconButton>
+      </InputAdornment>
+    )
+  }}
 />
 
           {/* ERROR */}
