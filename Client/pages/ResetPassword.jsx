@@ -6,9 +6,10 @@ import {
   Typography,
   Card,
   CardContent,
-   IconButton, 
-   InputAdornment, 
-  CircularProgress
+  IconButton,
+  InputAdornment,
+  CircularProgress,
+  LinearProgress   
 } from "@mui/material";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
 import { useParams, useNavigate } from "react-router-dom";
@@ -25,9 +26,40 @@ export default function ResetPassword() {
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
 
+const getPasswordStrength = (password) => {
+  let score = 0;
+
+  if (password.length >= 6) score++;
+  if (password.match(/[A-Z]/)) score++;
+  if (password.match(/[0-9]/)) score++;
+  if (password.match(/[^A-Za-z0-9]/)) score++;
+
+  if (score <= 1) return { label: "Weak", color: "error" };
+  if (score <= 3) return { label: "Medium", color: "warning" };
+
+  return { label: "Strong", color: "success" };
+};
+
+// 📊 Progress value
+const getStrengthValue = (password) => {
+  let score = 0;
+
+  if (password.length >= 6) score++;
+  if (password.match(/[A-Z]/)) score++;
+  if (password.match(/[0-9]/)) score++;
+  if (password.match(/[^A-Za-z0-9]/)) score++;
+
+  return (score / 4) * 100;
+};
+
+const strength = getPasswordStrength(password);
   const handleSubmit = async () => {
     if (password !== confirmPassword) {
   setError("Passwords do not match");
+  return;
+}
+if (strength.label === "Weak") {
+  setError("Password is too weak");
   return;
 }
     try {
@@ -76,6 +108,7 @@ export default function ResetPassword() {
 
           {/* PASSWORD */}
          <TextField
+         
   fullWidth
   label="New Password"
   type={showPassword ? "text" : "password"}
@@ -92,6 +125,19 @@ export default function ResetPassword() {
     )
   }}
 />
+{/* 🔥 PASSWORD STRENGTH */}
+{password && (
+  <>
+    <LinearProgress
+      variant="determinate"
+      value={getStrengthValue(password)}
+      sx={{ mt: 1, height: 8, borderRadius: 5 }}
+    />
+    <Typography color={strength.color} sx={{ mt: 1 }}>
+      Strength: {strength.label}
+    </Typography>
+  </>
+)}
           <TextField
   fullWidth
   label="Confirm Password"
