@@ -77,7 +77,7 @@ if (strength.label === "Weak") {
     //   setTimeout(() => {
     //     navigate("/login");
     //   }, 2000);
-setMessage(res.data.msg);
+setMessage("Password reset successful. Logging you in...");
 
 // 🔐 AUTO LOGIN
 localStorage.setItem("token", res.data.token);
