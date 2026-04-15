@@ -47,7 +47,7 @@ function App() {
         <Route path="/" element={<Register />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
-        <Route path="/provider/:id" element={<ProviderProfile />} />
+        {/* <Route path="/provider/:id" element={<ProviderProfile />} /> */}
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/reset-password/:token" element={<ResetPassword />} />
            {/* 🔐 PROTECTED */}
@@ -59,7 +59,14 @@ function App() {
             </ProtectedRoute>
           }
         />
-
+<Route
+          path="/provider/:id"
+          element={
+            <ProtectedRoute>
+              <ProviderProfile />
+            </ProtectedRoute>
+          }
+        />
         {/* 🔐 ADMIN ONLY */}
         <Route
           path="/admin"
@@ -69,6 +76,7 @@ function App() {
             </ProtectedRoute>
           }
         />
+        
       </Routes>
     </BrowserRouter>
   );
