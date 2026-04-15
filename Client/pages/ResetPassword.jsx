@@ -71,13 +71,22 @@ if (strength.label === "Weak") {
         password
       });
 
-      setMessage(res.data.msg);
+    //   setMessage(res.data.msg);
 
-      // ⏳ Redirect after success
-      setTimeout(() => {
-        navigate("/login");
-      }, 2000);
+    //   // ⏳ Redirect after success
+    //   setTimeout(() => {
+    //     navigate("/login");
+    //   }, 2000);
+setMessage(res.data.msg);
 
+// 🔐 AUTO LOGIN
+localStorage.setItem("token", res.data.token);
+localStorage.setItem("user", JSON.stringify(res.data.user));
+
+// 🚀 Redirect immediately
+setTimeout(() => {
+  navigate("/");
+}, 1500);
     } catch (err) {
       setError(err.response?.data?.msg || "Reset failed");
     } finally {
