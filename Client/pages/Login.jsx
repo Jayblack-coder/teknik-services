@@ -12,15 +12,22 @@ import {
 } from "@mui/material";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
 import API from "../utils/api";
+import { useNavigate } from "react-router-dom";
+
 
 export default function Login() {
+    const navigate = useNavigate(); 
   const [form, setForm] = useState({
     email: "",
     password: ""
   });
-
+useEffect(() => {
+  const token = localStorage.getItem("token");
+  if (token) navigate("/");
+}, []);
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -42,9 +49,8 @@ export default function Login() {
       window.location.href = "/";
 
     } catch (err) {
-      console.log(err.response?.data || err.message);
-      <Typography color="error">{err.response?.data?.msg || "Login failed"}</Typography>
-    } finally {
+  setError(err.response?.data?.msg || "Login failed");
+} finally {
       setLoading(false);
     }
   };
@@ -108,14 +114,19 @@ export default function Login() {
           >
             Forgot Password?
           </Typography>
-
+{/* ERROR MESSAGE */}
+{error && (
+  <Typography color="error" mt={1}>
+    {error}
+  </Typography>
+)}
           {/* LOGIN BUTTON */}
           <Button
             fullWidth
             variant="contained"
             sx={{ mt: 3, py: 1.5 }}
             onClick={handleLogin}
-            disabled={!form.email || !form.password}login
+            disabled={!form.email || !form.password}
             onKeyDown={(e) => e.key === "Enter" && handleLogin()}
           >
             {loading ? <CircularProgress size={24} /> : "Login"}
