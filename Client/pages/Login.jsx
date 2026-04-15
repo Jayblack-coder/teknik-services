@@ -116,7 +116,7 @@ useEffect(() => {
           </Typography>
 {/* ERROR MESSAGE */}
 {error && (
-  <Typography color="error" mt={1}>
+ <Typography color="error" mt={2} textAlign="center">
     {error}
   </Typography>
 )}
