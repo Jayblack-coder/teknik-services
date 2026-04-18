@@ -33,27 +33,44 @@ useEffect(() => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
-  const handleLogin = async () => {
-    try {
-      setLoading(true);
+//   const handleLogin = async () => {
+//     try {
+//       setLoading(true);
 
-      const res = await API.post("/auth/login", form);
+//       const res = await API.post("/auth/login", form);
 
-      // ✅ Save auth
-      localStorage.setItem("token", res.data.token);
-      localStorage.setItem("user", JSON.stringify(res.data.user));
+//       // ✅ Save auth
+//       localStorage.setItem("token", res.data.token);
+//       localStorage.setItem("user", JSON.stringify(res.data.user));
 
-      alert("Login successful!");
+//       alert("Login successful!");
 
-      // 🔁 Redirect
-      window.location.href = "/";
+//       // 🔁 Redirect
+//       navigate("/");
 
-    } catch (err) {
-  setError(err.response?.data?.msg || "Login failed");
-} finally {
-      setLoading(false);
-    }
-  };
+//     } catch (err) {
+//   setError(err.response?.data?.msg || "Login failed");
+// } finally {
+//       setLoading(false);
+//     }
+//   };
+const handleLogin = async () => {
+  try {
+    setLoading(true);
+
+    const res = await API.post("/auth/login", form);
+
+    localStorage.setItem("token", res.data.token);
+    localStorage.setItem("user", JSON.stringify(res.data.user));
+
+    navigate("/"); 
+
+  } catch (err) {
+    setError(err.response?.data?.msg || "Login failed");
+  } finally {
+    setLoading(false);
+  }
+};
 
   return (
     <Container maxWidth="sm">

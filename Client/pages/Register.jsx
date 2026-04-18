@@ -11,6 +11,7 @@ import {
   Box
 } from "@mui/material";
 import API from "../utils/api";
+import { useNavigate } from "react-router-dom";
 
 export default function Register() {
   const [role, setRole] = useState("subscriber");
@@ -63,21 +64,39 @@ export default function Register() {
   //   }
   // };
 
-  const handleSubmit = async () => {
+//   const handleSubmit = async () => {
+//   try {
+//     const res = await API.post("/auth/register", {
+//       ...form,
+//       role
+//     });
+
+//     // ✅ Save auth data
+//     localStorage.setItem("token", res.data.token);
+//     localStorage.setItem("user", JSON.stringify(res.data.user));
+
+//     alert("Registration successful!");
+
+//     // 🔁 Redirect
+//    navigate("/");
+
+//   } catch (err) {
+//     console.log(err.response?.data || err.message);
+//     alert("Registration failed");
+//   }
+// };
+
+const handleSubmit = async () => {
   try {
     const res = await API.post("/auth/register", {
       ...form,
       role
     });
 
-    // ✅ Save auth data
     localStorage.setItem("token", res.data.token);
     localStorage.setItem("user", JSON.stringify(res.data.user));
 
-    alert("Registration successful!");
-
-    // 🔁 Redirect
-    window.location.href = "/";
+    navigate("/"); // ✅ AUTO REDIRECT
 
   } catch (err) {
     console.log(err.response?.data || err.message);
