@@ -38,6 +38,7 @@ import Admin from "../pages/Admin";
 import ProviderProfile from "../pages/ProviderProfile";
 import ForgotPassword from "../pages/ForgotPassword";
 import ResetPassword from "../pages/ResetPassword";
+import Home from "../pages/Home";
 
 function App() {
   return (
@@ -45,7 +46,7 @@ function App() {
       <Navbar />
      {/* <Dashboard /> */}
       <Routes>
-        <Route path="/" element={<Register />} />
+        <Route path="/" element={<Home />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
         {/* <Route path="/provider/:id" element={<ProviderProfile />} /> */}

@@ -12,7 +12,8 @@ import {
 } from "@mui/material";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
 import API from "../utils/api";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
+v
 
 
 export default function Login() {
@@ -152,7 +153,7 @@ const handleLogin = async () => {
           {/* FOOTER */}
           <Typography align="center" mt={2}>
             Don’t have an account?{" "}
-            <a href="/register">Register</a>
+           <Link to="/register">Register</Link>
           </Typography>
 
         </CardContent>

@@ -11,7 +11,7 @@ import {
   Box
 } from "@mui/material";
 import API from "../utils/api";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 
 export default function Register() {
   const [role, setRole] = useState("subscriber");
@@ -137,7 +137,7 @@ const handleSubmit = async () => {
               </ToggleButton>
             </ToggleButtonGroup>
           </Box>
-
+ 
           {/* BASIC FIELDS */}
           <TextField
             fullWidth
@@ -206,7 +206,7 @@ const handleSubmit = async () => {
           {/* FOOTER */}
           <Typography align="center" mt={2}>
             Already have an account?{" "}
-            <a href="/login">Login</a>
+          <Link to="/login">Login</Link>
           </Typography>
 
         </CardContent>
