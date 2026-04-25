@@ -44,8 +44,8 @@ function App() {
   return (
     <BrowserRouter>
       <Navbar />
-     {/* <Dashboard /> */}
-     <Register/>
+     {/* <Dashboard />  */}
+     {/* <Register/> */}
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/login" element={<Login />} />
